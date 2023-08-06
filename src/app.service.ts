@@ -26,16 +26,11 @@ export class AppService {
 
   updateNote(id: Note['id'], note: UpdateNote): Note {
     const noteIndex = this.notes.findIndex((note) => note.id === id);
+    if (noteIndex === -1) {
+      return;
+    }
     this.notes[noteIndex] = { ...this.notes[noteIndex], ...note };
     return this.notes[noteIndex];
-  }
-
-  getNote(id: Note['id']): Note {
-    return this.notes.find((note) => note.id === id);
-  }
-
-  getNotes(): Note[] {
-    return this.notes;
   }
 
   getNotesStats(): CategoryStats[] {
@@ -52,5 +47,13 @@ export class AppService {
       });
       return { ...category, zipNumber, activeNumber };
     });
+  }
+
+  getNote(id: Note['id']): Note {
+    return this.notes.find((note) => note.id === id);
+  }
+
+  getNotes(): Note[] {
+    return this.notes;
   }
 }

@@ -6,6 +6,7 @@ import {
   Patch,
   Post,
   Get,
+  NotFoundException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
 import { CreateNote, Note, UpdateNote } from './types';
@@ -21,7 +22,11 @@ export class AppController {
 
   @Delete(':id')
   deleteNote(@Param() params: { id: Note['id'] }) {
-    return this.appService.deleteNote(params.id);
+    const result = this.appService.deleteNote(params.id);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   @Patch(':id')
@@ -29,7 +34,11 @@ export class AppController {
     @Param() params: { id: Note['id'] },
     @Body() updateNote: UpdateNote,
   ) {
-    return this.appService.updateNote(params.id, updateNote);
+    const result = this.appService.updateNote(params.id, updateNote);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   @Get('stats')
@@ -39,7 +48,11 @@ export class AppController {
 
   @Get(':id')
   getNote(@Param() params: { id: Note['id'] }) {
-    return this.appService.getNote(params.id);
+    const result = this.appService.getNote(params.id);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   @Get()
