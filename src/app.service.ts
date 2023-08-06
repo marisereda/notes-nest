@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CategoryStats, CreateNote, Note, UpdateNote } from './types';
+import { CategoryStats, Note } from './types';
 import { initialCategories, initialNotes } from './constants';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Injectable()
 export class AppService {
   notes = initialNotes;
 
-  addNote(note: CreateNote): Note {
+  addNote(note: CreateNoteDto): Note {
     const newNote = {
       id: uuidv4(),
       created: Date.now(),
@@ -24,7 +26,7 @@ export class AppService {
     return deletedNote;
   }
 
-  updateNote(id: Note['id'], note: UpdateNote): Note {
+  updateNote(id: Note['id'], note: UpdateNoteDto): Note {
     const noteIndex = this.notes.findIndex((note) => note.id === id);
     if (noteIndex === -1) {
       return;
