@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { CategoryStats, CreateNote, Note, UpdateNote } from './types';
+import { CategoryStats, Note } from './types';
 import { initialCategories, initialNotes } from './constants';
 import { v4 as uuidv4 } from 'uuid';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Injectable()
 export class AppService {
   notes = initialNotes;
 
-  addNote(note: CreateNote): Note {
+  addNote(note: CreateNoteDto): Note {
     const newNote = {
       id: uuidv4(),
       created: Date.now(),
@@ -24,18 +26,13 @@ export class AppService {
     return deletedNote;
   }
 
-  updateNote(id: Note['id'], note: UpdateNote): Note {
+  updateNote(id: Note['id'], note: UpdateNoteDto): Note {
     const noteIndex = this.notes.findIndex((note) => note.id === id);
+    if (noteIndex === -1) {
+      return;
+    }
     this.notes[noteIndex] = { ...this.notes[noteIndex], ...note };
     return this.notes[noteIndex];
-  }
-
-  getNote(id: Note['id']): Note {
-    return this.notes.find((note) => note.id === id);
-  }
-
-  getNotes(): Note[] {
-    return this.notes;
   }
 
   getNotesStats(): CategoryStats[] {
@@ -52,5 +49,13 @@ export class AppService {
       });
       return { ...category, zipNumber, activeNumber };
     });
+  }
+
+  getNote(id: Note['id']): Note {
+    return this.notes.find((note) => note.id === id);
+  }
+
+  getNotes(): Note[] {
+    return this.notes;
   }
 }

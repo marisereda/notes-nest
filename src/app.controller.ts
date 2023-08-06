@@ -6,30 +6,41 @@ import {
   Patch,
   Post,
   Get,
+  NotFoundException,
 } from '@nestjs/common';
 import { AppService } from './app.service';
-import { CreateNote, Note, UpdateNote } from './types';
+import { Note } from './types';
+import { CreateNoteDto } from './dto/create-note.dto';
+import { UpdateNoteDto } from './dto/update-note.dto';
 
 @Controller('notes')
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  addNote(@Body() createNote: CreateNote) {
+  addNote(@Body() createNote: CreateNoteDto) {
     return this.appService.addNote(createNote);
   }
 
   @Delete(':id')
   deleteNote(@Param() params: { id: Note['id'] }) {
-    return this.appService.deleteNote(params.id);
+    const result = this.appService.deleteNote(params.id);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   @Patch(':id')
   updateNote(
     @Param() params: { id: Note['id'] },
-    @Body() updateNote: UpdateNote,
+    @Body() updateNote: UpdateNoteDto,
   ) {
-    return this.appService.updateNote(params.id, updateNote);
+    const result = this.appService.updateNote(params.id, updateNote);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   @Get('stats')
@@ -39,7 +50,11 @@ export class AppController {
 
   @Get(':id')
   getNote(@Param() params: { id: Note['id'] }) {
-    return this.appService.getNote(params.id);
+    const result = this.appService.getNote(params.id);
+    if (!result) {
+      throw new NotFoundException();
+    }
+    return result;
   }
 
   @Get()
