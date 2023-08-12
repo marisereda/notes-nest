@@ -27,24 +27,16 @@ Notes API allows the user to add, edit, remove notes. There is also a statistica
 git clone https://github.com/marisereda/notes-nest.git
 ```
 
-### Install dependencies
-
-```bash
-npm install
-```
-
-### Run server
-
-```bash
-npm run start
-```
-
-Server will be started on `http://localhost:3000`
-
 ## Run in Docker
 
 ```bash
+# run containers
 docker-compose up
 ```
 
 Server will be started on `http://localhost:3000`
+
+```bash
+# stop containers
+docker-compose down
+```

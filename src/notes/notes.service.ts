@@ -1,46 +1,48 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { initialNotes, initialCategories } from 'src/constants';
+import { initialCategories } from 'src/constants';
 import { CategoryStats } from 'src/types';
-import { Note } from '../types';
+import { InjectModel } from '@nestjs/sequelize';
+import { Note } from './models/note.model';
 
 @Injectable()
 export class NotesService {
-  notes = initialNotes;
+  constructor(
+    @InjectModel(Note)
+    private noteModel: typeof Note,
+  ) {}
 
-  addNote(note: CreateNoteDto): Note {
-    const newNote = {
-      id: uuidv4(),
-      created: Date.now(),
-      archived: false,
-      ...note,
-    };
-    this.notes.push(newNote);
-    return newNote;
+  addNote(noteDto: CreateNoteDto): Promise<Note> {
+    return this.noteModel.create({ ...noteDto });
   }
 
-  deleteNote(id: Note['id']): Note {
-    const deletedNote = this.notes.find((note) => note.id === id);
-    this.notes = this.notes.filter((note) => note.id !== id);
-    return deletedNote;
-  }
-
-  updateNote(id: Note['id'], note: UpdateNoteDto): Note {
-    const noteIndex = this.notes.findIndex((note) => note.id === id);
-    if (noteIndex === -1) {
-      return;
+  async deleteNote(id: Note['id']): Promise<Note> {
+    const note = await this.getNote(id);
+    if (!note) {
+      return null;
     }
-    this.notes[noteIndex] = { ...this.notes[noteIndex], ...note };
-    return this.notes[noteIndex];
+    await note.destroy();
+    return note;
   }
 
-  getNotesStats(): CategoryStats[] {
+  async updateNote(id: Note['id'], noteDto: UpdateNoteDto): Promise<Note> {
+    const note = await this.getNote(id);
+    if (!note) {
+      return null;
+    }
+    await note.update(noteDto);
+    await note.save();
+    return note;
+  }
+
+  async getNotesStats(): Promise<CategoryStats[]> {
+    const notes = await this.getNotes();
+
     return initialCategories.map((category) => {
       let zipNumber = 0;
       let activeNumber = 0;
-      this.notes.forEach((note) => {
+      notes.forEach((note) => {
         if (note.category === category.name && note.archived) {
           zipNumber += 1;
         }
@@ -52,11 +54,15 @@ export class NotesService {
     });
   }
 
-  getNote(id: Note['id']): Note {
-    return this.notes.find((note) => note.id === id);
+  getNote(id: Note['id']): Promise<Note> {
+    return this.noteModel.findOne({
+      where: {
+        id,
+      },
+    });
   }
 
-  getNotes(): Note[] {
-    return this.notes;
+  getNotes(): Promise<Note[]> {
+    return this.noteModel.findAll();
   }
 }

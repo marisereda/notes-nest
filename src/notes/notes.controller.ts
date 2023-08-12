@@ -11,7 +11,7 @@ import {
 import { NotesService } from './notes.service';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
-import { Note } from 'src/types';
+import { Note } from './models/note.model';
 
 @Controller('notes')
 export class NotesController {
@@ -23,8 +23,8 @@ export class NotesController {
   }
 
   @Delete(':id')
-  deleteNote(@Param() params: { id: Note['id'] }) {
-    const result = this.notesService.deleteNote(params.id);
+  async deleteNote(@Param() params: { id: Note['id'] }) {
+    const result = await this.notesService.deleteNote(params.id);
     if (!result) {
       throw new NotFoundException();
     }
@@ -32,11 +32,11 @@ export class NotesController {
   }
 
   @Patch(':id')
-  updateNote(
+  async updateNote(
     @Param() params: { id: Note['id'] },
     @Body() updateNote: UpdateNoteDto,
   ) {
-    const result = this.notesService.updateNote(params.id, updateNote);
+    const result = await this.notesService.updateNote(params.id, updateNote);
     if (!result) {
       throw new NotFoundException();
     }
@@ -49,8 +49,10 @@ export class NotesController {
   }
 
   @Get(':id')
-  getNote(@Param() params: { id: Note['id'] }) {
-    const result = this.notesService.getNote(params.id);
+  async getNote(@Param() params: { id: Note['id'] }) {
+    const result = await this.notesService.getNote(params.id);
+    console.log('🚧 resultGETNOTE:', result);
+
     if (!result) {
       throw new NotFoundException();
     }

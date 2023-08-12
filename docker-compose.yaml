@@ -1,19 +1,15 @@
 version: '3'
 services:
   app:
-    restart: on-failure
     build: .
     depends_on:
       - postgres
-    environment:
-      DATABASE_URL: postgres://user:pass@postgres:5432/db
-      NODE_ENV: development
-      PORT: 3000
     ports:
       - '3000:3000'
-    command: npm run start:dev
     volumes:
-      - .:/app/
+      - ./:/app
+    networks:
+      - app-network
 
   postgres:
     image: postgres:15-alpine
@@ -23,3 +19,9 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: db
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
