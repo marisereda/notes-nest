@@ -40,3 +40,11 @@ npm run start
 ```
 
 Server will be started on `http://localhost:3000`
+
+## Run in Docker
+
+```bash
+docker-compose up
+```
+
+Server will be started on `http://localhost:3000`
