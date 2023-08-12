@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsNotEmpty, IsString } from 'class-validator';
 import { Category } from 'src/types';
 
 export class UpdateNoteDto {
@@ -13,4 +13,8 @@ export class UpdateNoteDto {
   @IsNotEmpty()
   @IsString()
   content: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  archived: boolean;
 }
