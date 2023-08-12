@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { CategoryStats, Note } from './types';
-import { initialCategories, initialNotes } from './constants';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
+import { initialNotes, initialCategories } from 'src/constants';
+import { CategoryStats } from 'src/types';
+import { Note } from '../types';
 
 @Injectable()
-export class AppService {
+export class NotesService {
   notes = initialNotes;
 
   addNote(note: CreateNoteDto): Note {
